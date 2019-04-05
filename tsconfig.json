@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "baseUrl": ".",
+    "target": "es6",
+    "types": ["node"],
+    "module": "commonjs",
+    "lib": ["es2018"],
+    "strict": true,
+    "sourceMap": true,
+    "pretty": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "strictFunctionTypes": true,
+    "esModuleInterop": true,
+    "outDir": "dist"
+  },
+  "typeAcquisition": {
+    "enable": true
+  }
+}

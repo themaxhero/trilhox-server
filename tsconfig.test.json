@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "target": "es6",
+    "types": ["node", "jest"],
+    "module": "commonjs",
+    "lib": ["es2018"],
+    "strict": true,
+    "sourceMap": true,
+    "pretty": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "esModuleInterop": true,
+    "outDir": "dist"
+  },
+  "typeAcquisition": {
+    "enable": true
+  }
+}

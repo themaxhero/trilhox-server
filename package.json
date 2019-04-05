@@ -1,0 +1,47 @@
+{
+  "name": "trilhox-server",
+  "version": "0.0.1",
+  "description": "Backend of the TrilhoX project",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "start": "nodemon --exec ts-node --transpile-only ./src/index.ts",
+    "dev": "nodemon --exec ts-node ./src/index.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://www.github.com/themaxhero/trilhox-server"
+  },
+  "author": "Marcelo Amancio de Lima Santos",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/cors": "^2.8.4",
+    "@types/express": "^4.16.1",
+    "@types/graphql": "^14.0.7",
+    "@types/jest": "^24.0.11",
+    "@types/pg": "7.4.11",
+    "jest": "^24.5.0",
+    "nodemon": "^1.18.10",
+    "prettier": "^1.16.4",
+    "ts-jest": "^24.0.0",
+    "ts-loader": "^5.3.3",
+    "tsc": "^1.20150623.0",
+    "tslint": "^5.14.0",
+    "typescript": "^3.3.4000"
+  },
+  "dependencies": {
+    "@types/bcrypt": "^3.0.0",
+    "@types/express-validator": "^3.0.0",
+    "@types/jsonwebtoken": "^8.3.2",
+    "@types/request": "^2.48.1",
+    "apollo": "^2.6.2",
+    "apollo-server": "^2.4.8",
+    "apollo-server-express": "^2.4.8",
+    "bcrypt": "^3.0.5",
+    "express": "^4.16.4",
+    "jsonwebtoken": "^8.5.1",
+    "pg": "^7.9.0",
+    "ts-node": "^8.0.3",
+    "typeorm": "0.2.16"
+  }
+}
