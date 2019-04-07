@@ -1,9 +1,21 @@
-import { ApolloServer, gql } from "apollo-server-express";
+import { ApolloServer, PubSub } from "apollo-server-express";
 import bodyParser from "body-parser";
 import express from "express";
 import "reflect-metadata";
 import { createServer } from "http";
 import { Connection, createConnection } from "typeorm";
+import { BookRepo } from "./repo/Book.Repo";
+import { CardRepo } from "./repo/Card.Repo";
+import { CommentRepo } from "./repo/Comment.Repo";
+import { KanbanRepo } from "./repo/Kanban.Repo";
+import { LabelRepo } from "./repo/Label.Repo";
+import { MemberRepo } from "./repo/Member.Repo";
+import { TaskRepo } from "./repo/Task.Repo";
+import { UserRepo } from "./repo/User.Repo";
+import { createResolvers } from "./resolvers";
+import typeDefs from "./schema";
+import { IContext, IRepos } from "./context";
+import { User } from "./entity/User";
 
 createConnection().then(async (dbconn: Connection) => {
     const app = express();
@@ -12,59 +24,26 @@ createConnection().then(async (dbconn: Connection) => {
   
     const PORT = 4600;
 
-    const typeDefs = gql`
-        type TestModel{
-            bestSinger: String!
-        }
+    const pubsub = new PubSub();
 
-        type Mutation{
-            changeTheFacts(name: String): TestModel!
-        }
-
-        type Query{
-            bestSinger: String!
-        }
-
-        schema{
-            Mutation,
-            Query
-        }
-    `
-
-    interface IFakeDb {
-        bestSinger: string;
-    }
-
-    interface IChangeTheFactsArgs{
-        name: string;
-    }
-
-    const fakeDb: IFakeDb = {
-        bestSinger: "Freddie Mercury"
+    const repos: IRepos = {
+        book: new BookRepo(dbconn),
+        card: new CardRepo(dbconn),
+        comment: new CommentRepo(dbconn),
+        kanban: new KanbanRepo(dbconn),
+        label: new LabelRepo(dbconn),
+        member: new MemberRepo(dbconn),
+        task: new TaskRepo(dbconn),
+        user: new UserRepo(dbconn),
     };
 
-    const resolvers = {
-        Mutation: {
-            changeTheFacts: (_: {},
-                             { name }: IChangeTheFactsArgs,
-                             fakeDb: IFakeDb) => {
-                console.log(
-                    `Actually you can't change this undeniable truth.\n
-                     but, let's pretend that you can.`);
-                fakeDb.bestSinger = name;
-                return fakeDb;
-            }
-        },
-        Query: {
-            bestSinger: (_: {}, __:{}, fakeDb: IFakeDb) => {
-                return fakeDb.bestSinger;
-            }
-        },
-    };
+    const user = new User("admin", "a@b.com", "oswaldo123");
 
     const server = new ApolloServer({
-        context: () => fakeDb,
-        resolvers,
+        context: (): IContext => {
+            return { user, repos, pubsub } 
+        },
+        resolvers: createResolvers(pubsub),
         typeDefs,
       });
 
