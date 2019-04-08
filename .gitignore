@@ -17,3 +17,4 @@ typings/
 *.zip
 .yarn-integrity
 .env
+src/keys.ts
