@@ -1,1 +1,1 @@
-export const JWT_SECRET = "<INSERT_YOUR_JWT_SECRET_HERE>";
+export const JWT_SECRET = " @._MyL1ttl3S3cr3t_.# ";

@@ -12,3 +12,8 @@ export const usernameValidator =
         }
         return true;
     };
+
+export function uuidValidator(idCandidate: string){
+    const p = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/ig;
+    return p.test(idCandidate);
+}
