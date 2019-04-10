@@ -4,20 +4,8 @@ import { Kanban } from "../entity/Kanban";
 import { Label } from "../entity/Label";
 import { Member } from "../entity/Member";
 import { User } from "../entity/User";
+import { IAddKanbanToUserInput, IUpdateKanbanInput } from "../input.types";
 import { BaseRepo } from "./Base.Repo";
-
-export interface IKanbanCreationParams {
-    author: User;
-    name?: string;
-}
-
-export interface IKanbanChangeset{
-    author?: User;
-    name?: string;
-    background?: string;
-    books?: Book[];
-    members?: Member[];
-}
 
 export class KanbanRepo extends BaseRepo{
     private repo: Repository<Kanban>;
@@ -27,9 +15,9 @@ export class KanbanRepo extends BaseRepo{
         this.repo = dbconn.getRepository(Kanban);
     }
 
-    public async create(input: IKanbanCreationParams){
+    public async create(author: User, input: IAddKanbanToUserInput){
         const kanban = new Kanban(
-            input.author,
+            author,
             input.name,
         );
         return await kanban.save();
@@ -141,7 +129,7 @@ export class KanbanRepo extends BaseRepo{
             );
     }
 
-    public update(id: string, changeset: IKanbanChangeset){
+    public update(id: string, changeset: IUpdateKanbanInput){
         this.dbconn
             .createQueryBuilder()
             .update(Kanban)

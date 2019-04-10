@@ -1,18 +1,9 @@
+import { IPostCommentOnCardInput, IUpdateCommentInput } from "src/input.types";
 import { Connection, Repository } from "typeorm";
 import { Card } from "../entity/Card";
 import { Comment } from "../entity/Comment";
 import { User } from "../entity/User";
 import { BaseRepo } from "./Base.Repo";
-
-export interface ICommentCreationParams {
-    card: Card;
-    author: User;
-    content: string;
-}
-
-export interface ICommentChangeset{
-    content: string;
-}
 
 export class CommentRepo extends BaseRepo{
     private repo: Repository<Comment>;
@@ -22,9 +13,9 @@ export class CommentRepo extends BaseRepo{
         this.repo = dbconn.getRepository(Comment);
     }
 
-    public create(user: User, input: ICommentCreationParams){
+    public create(user: User, input: IPostCommentOnCardInput){
         const comment = new Comment(
-            input.author,
+            user,
             input.content,
         );
         return comment.save();
@@ -43,7 +34,7 @@ export class CommentRepo extends BaseRepo{
                 .getMany();
     }
 
-    public update(id: string, changeset: ICommentChangeset){
+    public update(id: string, changeset: IUpdateCommentInput){
         this.dbconn
             .createQueryBuilder()
             .update(Comment)

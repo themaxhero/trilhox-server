@@ -6,19 +6,13 @@ import { Kanban } from "../entity/Kanban";
 import { Label } from "../entity/Label";
 import { Task } from "../entity/Task";
 import { User } from "../entity/User";
+import { IUpdateUserInput } from "../input.types";
 import { BaseRepo } from "./Base.Repo";
 
 export interface IUserCreationParams{
     username: string;
     email: string;
     password: string;
-    name?: string;
-    avatar?: string;
-    token?: string;
-}
-
-export interface IUserChangeset{
-    username?: string;
     name?: string;
     avatar?: string;
     token?: string;
@@ -77,7 +71,7 @@ export class UserRepo extends BaseRepo{
                 .getOne();
     }
 
-    public update(id: string, changeset: IUserChangeset){
+    public update(id: string, changeset: IUpdateUserInput){
         this.dbconn
             .createQueryBuilder()
             .update(User)

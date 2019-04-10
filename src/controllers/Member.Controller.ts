@@ -1,18 +1,19 @@
 import { PubSub, withFilter } from "apollo-server";
 import { IContext, IRepos } from "../context";
 import { User } from "../entity/User";
-import { IMemberChangeset } from "../repo/Member.Repo";
-import { uuidValidator } from "../validator";
+import { IUpdateMemberInput } from "../input.types";
+import { UpdateMemberInputValidator, uuidValidator } from "../validator";
 
 export class MemberController{
     public static async update(id: string,
-                               input: IMemberChangeset,
+                               input: IUpdateMemberInput,
                                user: User,
                                repos: IRepos,
                                pubsub: PubSub){
         if (!uuidValidator(id)){
             throw new Error("Invalid Member ID");
         }
+        UpdateMemberInputValidator(input);
         const kanban = await repos.member.fetch(id)
             .then((m) => { if (m !== undefined ) { return m.getKanban(); } });
         if (kanban === undefined){

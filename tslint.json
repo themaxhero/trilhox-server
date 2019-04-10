@@ -5,6 +5,7 @@
         "no-empty-interface": false,
         "one-line": false,
         "no-empty": false,
-        "no-bitwise": false
+        "no-bitwise": false,
+        "max-line-length": [true, 80]
     }
 }

@@ -3,12 +3,14 @@ import { compare, hash } from "bcrypt";
 import bodyParser from "body-parser";
 import express, { Request, Response } from "express";
 import * as expressValidator from "express-validator/check";
-import "reflect-metadata";
-import { ConnectionContext } from "subscriptions-transport-ws";
 import { createServer } from "http";
 import { sign, verify } from "jsonwebtoken";
+import "reflect-metadata";
+import { ConnectionContext } from "subscriptions-transport-ws";
 import { Connection, createConnection } from "typeorm";
 import WebSocket from "ws";
+import { IRepos } from "./context";
+import { JWT_SECRET } from "./keys";
 import { BookRepo } from "./repo/Book.Repo";
 import { CardRepo } from "./repo/Card.Repo";
 import { CommentRepo } from "./repo/Comment.Repo";
@@ -18,16 +20,14 @@ import { MemberRepo } from "./repo/Member.Repo";
 import { TaskRepo } from "./repo/Task.Repo";
 import { UserRepo } from "./repo/User.Repo";
 import { createResolvers } from "./resolvers";
-import { JWT_SECRET } from "./keys";
 import typeDefs from "./schema";
-import { IRepos } from "./context";
 import * as validator from "./validator";
 
 createConnection().then(async (dbconn: Connection) => {
     const app = express();
-  
+
     app.use(bodyParser.json());
-  
+
     const PORT = 4600;
 
     const pubsub = new PubSub();
@@ -54,7 +54,7 @@ createConnection().then(async (dbconn: Connection) => {
             res.end(`<h1>${ error.replace(/_/, " ").toUpperCase() }</h1>`);
             throw new Error("Invalid Authorization Header");
         }
-            return token.split(" ")[1];
+        return token.split(" ")[1];
     };
     const context = async ({req, res}: any) => {
         const token = getToken(req.headers.authorization, res);
@@ -71,7 +71,7 @@ createConnection().then(async (dbconn: Connection) => {
         }
         res.status(401).json({ error: "invalid_token" });
       };
-    
+
     const getTokenForSubs = (authorizationHeader: string | undefined,
                              wsocket: WebSocket) => {
         const token = authorizationHeader || false;
@@ -105,7 +105,7 @@ createConnection().then(async (dbconn: Connection) => {
         throw new Error("Missing Auth token!");
       }
     };
-  
+
     const onDisconnect = (wsocket: WebSocket, wsContext: ConnectionContext) => {
       wsocket.terminate();
     };
@@ -119,9 +119,9 @@ createConnection().then(async (dbconn: Connection) => {
     });
 
     const sendCookies = (res: Response,
-                           username: string,
-                           token: string,
-                           expires: Date) => {
+                         username: string,
+                         token: string,
+                         expires: Date) => {
         res.cookie("username", username, { expires });
         res.cookie("token", token, { expires });
     };
@@ -131,7 +131,8 @@ createConnection().then(async (dbconn: Connection) => {
         if (!req.body.username || !req.body.email || !req.body.password){
             return res.status(400).json(["bad_request"]);
         } else {
-            expressValidator.body("username").custom(validator.usernameValidator);
+            expressValidator.body("username")
+              .custom(validator.usernameValidator);
             expressValidator.body("email").isEmail();
             expressValidator.body("password").isLength({min: 8, max: 64});
             const errors = expressValidator.validationResult(req);
@@ -203,7 +204,12 @@ createConnection().then(async (dbconn: Connection) => {
     server.installSubscriptionHandlers(ws);
 
     ws.listen({ port: PORT}, () => {
-        console.log(`🚀 Server ready at http://localhost:${PORT}${server.graphqlPath}`);
-        console.log(`🚀 Subscriptions ready at ws://localhost:${PORT}${server.subscriptionsPath}`);
+        console.log(
+          `🚀 Server ready at http://localhost:${PORT}${server.graphqlPath}`,
+        );
+        console.log(
+          `🚀 Subscriptions ready at
+           ws://localhost:${PORT}${server.subscriptionsPath}`,
+        );
     });
 });

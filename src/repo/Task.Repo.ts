@@ -1,16 +1,7 @@
 import { Connection, Repository } from "typeorm";
 import { Task } from "../entity/Task";
+import { IAddTaskToCardInput, IUpdateTaskInput } from "../input.types";
 import { BaseRepo } from "./Base.Repo";
-
-export interface ITaskCreationParams{
-    name: string;
-    active: boolean;
-}
-
-export interface ITaskChangeset{
-    name?: string;
-    active?: boolean;
-}
 
 export class TaskRepo extends BaseRepo{
     private repo: Repository<Task>;
@@ -20,7 +11,7 @@ export class TaskRepo extends BaseRepo{
         this.repo = dbconn.getRepository(Task);
     }
 
-    public create(input: ITaskCreationParams){
+    public create(input: IAddTaskToCardInput){
         const task = new Task(input.name, input.active);
         return task.save();
     }
@@ -38,7 +29,7 @@ export class TaskRepo extends BaseRepo{
                 .getMany();
     }
 
-    public update(id: string, changeset: ITaskChangeset){
+    public update(id: string, changeset: IUpdateTaskInput){
         this.dbconn
             .createQueryBuilder()
             .update(Task)

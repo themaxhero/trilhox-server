@@ -2,20 +2,37 @@ import { PubSub, withFilter} from "apollo-server";
 import { IContext, IRepos } from "../context";
 import { Permission } from "../entity/Member";
 import { User } from "../entity/User";
-import { IBookChangeset } from "../repo/Book.Repo";
-import { ICardCreationParams } from "../repo/Card.Repo";
+import { IAddCardToBookInput, IUpdateBookInput } from "../input.types";
 import { xor } from "../utils";
-import { uuidValidator } from "../validator";
+import { AddCardToBookInputValidator,
+         UpdateBookInputValidator,
+         uuidValidator,
+} from "../validator";
 
 export class BookController{
+    public static fetch(id: string, repos: IRepos){
+        if (!uuidValidator(id)){
+            throw new Error("Invalid Book ID");
+        }
+        return repos.book.fetch(id);
+    }
+
+    public static allCards(id: string, repos: IRepos){
+        if (!uuidValidator(id)){
+            throw new Error("Invalid Book ID");
+        }
+        return repos.book.getCards(id);
+    }
+
     public static async addCard(id: string,
-                                input: ICardCreationParams,
+                                input: IAddCardToBookInput,
                                 user: User,
                                 repos: IRepos,
                                 pubsub: PubSub){
         if (!uuidValidator(id)){
             throw new Error("Invalid Book ID");
         }
+        AddCardToBookInputValidator(input);
         const kanban = await repos.book.fetch(id)
             .then((b) => { if (b !== undefined ) { return b.getKanban(); } });
         if (kanban === undefined){
@@ -25,16 +42,20 @@ export class BookController{
         if (xor(permission !== Permission.EDITOR, user !== kanban.author)){
             throw new Error("Access Denied");
         }
-        const card = await repos.card.create(input);
+        const book = await repos.book.fetch(id);
+        if (book === undefined){
+            throw new Error("Book not found");
+        }
+        const card = await repos.card.create(book, input);
         if (card === undefined){
             throw new Error("Card could not be created");
         }
-        const book = await repos.book.addCard(id, card);
+        const newBook = await repos.book.addCard(id, card);
         if (book === undefined){
             throw new Error("Book could not be updated");
         }
-        pubsub.publish("BOOK_UPDATED", { book });
-        return book;
+        pubsub.publish("BOOK_UPDATED", { book: newBook });
+        return newBook;
     }
 
     public static async removeCard(id: string,
@@ -44,6 +65,9 @@ export class BookController{
                                    pubsub: PubSub){
         if (!uuidValidator(id)){
             throw new Error("Invalid Book ID");
+        }
+        if (!uuidValidator(cardId)){
+            throw new Error("Invalid Card ID");
         }
         const kanban = await repos.book.fetch(id)
             .then((b) => { if (b !== undefined ) { return b.getKanban(); } });
@@ -71,13 +95,14 @@ export class BookController{
     }
 
     public static async update(id: string,
-                               input: IBookChangeset,
+                               input: IUpdateBookInput,
                                user: User,
                                repos: IRepos,
                                pubsub: PubSub){
         if (!uuidValidator(id)){
             throw new Error("Invalid Book ID");
         }
+        UpdateBookInputValidator(input);
         const kanban = await repos.book.fetch(id)
             .then((b) => { if (b !== undefined ) { return b.getKanban(); } });
         if (kanban === undefined){

@@ -1,46 +1,52 @@
 import { IContext } from "../context";
+import { BookController } from "../controllers/Book.Controller";
+import { CardController } from "../controllers/Card.Controller";
+import { CommentController } from "../controllers/Comment.Controller";
+import { KanbanController } from "../controllers/Kanban.Controller";
+import { LabelController } from "../controllers/Label.Controller";
+import { TaskController } from "../controllers/Task.Controller";
 
 export default{
-    allBooksFromKanban: async (_: any, { id }: any, { repos }: IContext) => {
-        return await repos.kanban.getBooks(id);
+    allBooksFromKanban: async (_: {}, { id }: any, { repos }: IContext) => {
+        return KanbanController.allBooks(id, repos);
     },
-    allCardsFromBook: async (_: any, { id }: any, { repos }: IContext) => {
-        return await repos.book.getCards(id);
+    allCardsFromBook: async (_: {}, { id }: any, { repos }: IContext) => {
+        return BookController.allCards(id, repos);
     },
-    allCommentsFromCard: async (_: any, { id }: any, { repos }: IContext) => {
-        return await repos.card.getComments(id);
+    allCommentsFromCard: async (_: {}, { id }: any, { repos }: IContext) => {
+        return CardController.allComments(id, repos);
     },
-    allLabelsFromKanban: async (_: any, { id }: any, { repos }: IContext) => {
-        return await repos.kanban.getLabels(id);
+    allLabelsFromKanban: async (_: {}, { id }: any, { repos }: IContext) => {
+        return KanbanController.allLabels(id, repos);
     },
-    allMembersFromKanban: async (_: any, { id }: any, { repos }: IContext) => {
-        return await repos.kanban.getMembers(id);
+    allMembersFromKanban: async (_: {}, { id }: any, { repos }: IContext) => {
+        return KanbanController.allMembers(id, repos);
     },
-    allMyKanbans: async (_: any, __: any, { user }: IContext) => {
-        return await user.kanbans;
+    allMyKanbans: async (_: {}, __: any, { user }: IContext) => {
+        return user.kanbans;
     },
-    allTasksFromCard: async (_: any, { id }: any, { repos }: IContext) => {
-        return await repos.card.getTasks(id);
+    allTasksFromCard: async (_: {}, { id }: any, { repos }: IContext) => {
+        return CardController.allTasks(id, repos);
     },
-    book: (_: any, { id }: any, { repos }: IContext) => {
-        return repos.book.fetch(id);
+    book: (_: {}, { id }: any, { repos }: IContext) => {
+        return BookController.fetch(id, repos);
     },
-    card: (_: any, { id }: any, { repos }: IContext) => {
-        return repos.card.fetch(id);
+    card: (_: {}, { id }: any, { repos }: IContext) => {
+        return CardController.fetch(id, repos);
     },
-    comment: (_: any, { id }: any, { repos }: IContext) => {
-        return repos.comment.fetch(id);
+    comment: (_: {}, { id }: any, { repos }: IContext) => {
+        return CommentController.fetch(id, repos);
     },
-    kanban: (_: any, { id }: any, { repos }: IContext) => {
-        return repos.kanban.fetch(id);
+    kanban: (_: {}, { id }: any, { repos }: IContext) => {
+        return KanbanController.fetch(id, repos);
     },
-    label: (_: any, { id }: any, { repos }: IContext) => {
-        return repos.kanban.fetch(id);
+    label: (_: {}, { id }: any, { repos }: IContext) => {
+        return LabelController.fetch(id, repos);
     },
-    me: (_: any, __: any, { user }: IContext) => {
+    me: (_: {}, __: any, { user }: IContext) => {
         return user;
     },
-    task: (_: any, { id }: any, { repos }: IContext) => {
-        return repos.task.fetch(id);
+    task: (_: {}, { id }: any, { repos }: IContext) => {
+        return TaskController.fetch(id, repos);
     },
 };
