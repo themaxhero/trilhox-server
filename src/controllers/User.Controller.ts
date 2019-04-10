@@ -1,26 +1,28 @@
 import { PubSub, withFilter } from "apollo-server";
-import { IKanbanCreationParams } from "src/repo/Kanban.Repo";
 import { IContext, IRepos } from "../context";
 import { User } from "../entity/User";
-import { IUserChangeset } from "../repo/User.Repo";
+import { IAddKanbanToUserInput, IUpdateUserInput } from "../input.types";
+import { UpdateUserInputValidator } from "../validator";
+
 export class UserController{
     public static async update(user: User,
-                               input: IUserChangeset,
+                               input: IUpdateUserInput,
                                repos: IRepos,
                                pubsub: PubSub){
         const u = await repos.user.update(user.id, input);
         if (u === undefined){
             throw new Error("User could not be updated");
         }
+        UpdateUserInputValidator(input);
         pubsub.publish("USER_UPDATED", { user: u });
         return u;
     }
 
-    public static async addKanban(input: IKanbanCreationParams,
+    public static async addKanban(input: IAddKanbanToUserInput,
                                   user: User,
                                   repos: IRepos,
                                   pubsub: PubSub){
-        const kanban = await repos.kanban.create(input);
+        const kanban = await repos.kanban.create(user, input);
         if (kanban === undefined){
             throw new Error("Kanban could not be created");
         }

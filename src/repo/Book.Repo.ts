@@ -1,17 +1,8 @@
 import { Connection, Repository } from "typeorm";
 import { Book } from "../entity/Book";
 import { Card } from "../entity/Card";
-import { Kanban } from "../entity/Kanban";
+import { IAddBookToKanbanInput, IUpdateBookInput } from "../input.types";
 import { BaseRepo } from "./Base.Repo";
-
-export interface IBookCreationParams{
-    kanban: Kanban;
-    cards?: Card[];
-    name?: string;
-}
-export interface IBookChangeset{
-    name?: string;
-}
 
 export class BookRepo extends BaseRepo{
     private repo: Repository<Book>;
@@ -21,7 +12,7 @@ export class BookRepo extends BaseRepo{
         this.repo = dbconn.getRepository(Book);
     }
 
-    public create(input: IBookCreationParams){
+    public create(input: IAddBookToKanbanInput){
         const book = new Book(input.name);
         return book.save();
     }
@@ -70,7 +61,7 @@ export class BookRepo extends BaseRepo{
             );
     }
 
-    public update(id: string, changeset: IBookChangeset){
+    public update(id: string, changeset: IUpdateBookInput){
         this.dbconn
             .createQueryBuilder()
             .update(Book)

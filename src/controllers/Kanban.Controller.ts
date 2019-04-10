@@ -2,22 +2,29 @@ import { PubSub, withFilter } from "apollo-server";
 import { IContext, IRepos } from "../context";
 import { Permission } from "../entity/Member";
 import { User } from "../entity/User";
-import { IBookCreationParams } from "../repo/Book.Repo";
-import { IKanbanChangeset } from "../repo/Kanban.Repo";
-import { ILabelCreationParams } from "../repo/Label.Repo";
-import { IMemberCreationParams } from "../repo/Member.Repo";
+import { IAddBookToKanbanInput,
+         IAddLabelToKanbanInput,
+         IAddMemberToKanbanInput,
+         IUpdateKanbanInput,
+} from "../input.types";
 import { xor } from "../utils";
-import { uuidValidator } from "../validator";
+import { AddBookToKanbanInputValidator,
+         AddLabelToKanbanInputValidator,
+         AddMemberToKanbanInputValidator,
+         UpdateKanbanInputValidator,
+         uuidValidator,
+} from "../validator";
 
 export class KanbanController{
     public static async addBook(id: string,
-                                input: IBookCreationParams,
+                                input: IAddBookToKanbanInput,
                                 user: User,
                                 repos: IRepos,
                                 pubsub: PubSub) {
         if (!uuidValidator(id)){
             throw new Error("Invalid Kanban ID");
         }
+        AddBookToKanbanInputValidator(input);
         const kanban = await repos.kanban.fetch(id);
         if (kanban === undefined){
             throw new Error("Kanban not found");
@@ -39,13 +46,14 @@ export class KanbanController{
     }
 
     public static async addLabel(id: string,
-                                 input: ILabelCreationParams,
+                                 input: IAddLabelToKanbanInput,
                                  user: User,
                                  repos: IRepos,
                                  pubsub: PubSub) {
         if (!uuidValidator(id)){
             throw new Error("Invalid Kanban ID");
         }
+        AddLabelToKanbanInputValidator(input);
         const kanban = await repos.kanban.fetch(id);
         if (kanban === undefined){
             throw new Error("Kanban not found");
@@ -67,13 +75,14 @@ export class KanbanController{
     }
 
     public static async addMember(id: string,
-                                  input: IMemberCreationParams,
+                                  input: IAddMemberToKanbanInput,
                                   user: User,
                                   repos: IRepos,
                                   pubsub: PubSub) {
         if (!uuidValidator(id)){
             throw new Error("Invalid Kanban ID");
         }
+        AddMemberToKanbanInputValidator(input);
         const kanban = await repos.kanban.fetch(id);
         if (kanban === undefined){
             throw new Error("Kanban not found");
@@ -82,7 +91,11 @@ export class KanbanController{
         if (xor(permission !== Permission.EDITOR, user !== kanban.author)){
             throw new Error("Access Denied");
         }
-        const member = await repos.member.create(input);
+        const gotUser = await repos.user.fetch(input.userId);
+        if (gotUser === undefined){
+            throw new Error("User not found");
+        }
+        const member = await repos.member.create(gotUser, kanban, input);
         if (member === undefined) {
             throw new Error("Member could be created");
         }
@@ -181,13 +194,14 @@ export class KanbanController{
     }
 
     public static async update(id: string,
-                               input: IKanbanChangeset,
+                               input: IUpdateKanbanInput,
                                user: User,
                                repos: IRepos,
                                pubsub: PubSub){
         if (!uuidValidator(id)){
             throw new Error("Invalid Kanban ID");
         }
+        UpdateKanbanInputValidator(input);
         const kanban = await repos.kanban.fetch(id);
         if (kanban === undefined){
             throw new Error("Kanban not found");
@@ -223,7 +237,9 @@ export class KanbanController{
             subscribe: () =>
             withFilter(
                 () => pubsub.asyncIterator("KANBAN_REMOVED"),
-                (_: any, { author, members }: any, { repos, user}: IContext) => {
+                (_: any,
+                 { author, members }: any,
+                 { repos, user }: IContext) => {
                     const ownership = author === user;
                     const membership = repos.user.hasMembership(user, members);
                     return ( ownership || membership );

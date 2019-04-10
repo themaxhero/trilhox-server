@@ -3,8 +3,9 @@ import { IContext, IRepos } from "../context";
 import { Kanban } from "../entity/Kanban";
 import { Permission } from "../entity/Member";
 import { User } from "../entity/User";
-import { ITaskChangeset } from "../repo/Task.Repo";
+import { IUpdateTaskInput } from "../input.types";
 import { xor } from "../utils";
+import { UpdateTaskInputValidator, uuidValidator } from "../validator";
 
 interface ISubRemoved {
     id: string;
@@ -13,10 +14,14 @@ interface ISubRemoved {
 
 export class TaskController{
     public static async update(id: string,
-                               input: ITaskChangeset,
+                               input: IUpdateTaskInput,
                                user: User,
                                repos: IRepos,
                                pubsub: PubSub){
+        if (!uuidValidator(id)){
+            throw new Error("Invalid Task ID");
+        }
+        UpdateTaskInputValidator(input);
         const kanban = await repos.task.fetch(id)
             .then((t) => { if (t !== undefined ) { return t.getKanban(); } });
         if (kanban === undefined){

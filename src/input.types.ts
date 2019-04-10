@@ -10,11 +10,15 @@ export interface IAddLabelToKanbanInput{
 }
 
 export interface IAddMemberToKanbanInput{
-    user: string;
+    userId: string;
     permission: Permission;
 }
 
 export interface IAddCardToBookInput{
+    name?: string;
+}
+
+export interface IAddKanbanToUserInput{
     name?: string;
 }
 

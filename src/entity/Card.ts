@@ -38,8 +38,9 @@ export class Card extends BaseEntity {
     @OneToMany((type) => Comment, (comment) => comment.card)
     public comments!: Comment[];
 
-    constructor(name?: string){
+    constructor(book: Book, name?: string){
         super();
+        this.book = book;
         this.name = name || "Untitled Card";
     }
 

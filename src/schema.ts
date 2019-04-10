@@ -1,6 +1,7 @@
 import { gql } from "apollo-server-express";
 const typeDefs = gql`
     scalar DateTime
+
     input AddBookToKanbanInput{
         name: String
     }
@@ -8,16 +9,15 @@ const typeDefs = gql`
         name: String!
         color: String!
     }
+    input AddKanbanToUserInput{
+        name: String!
+    }
     input AddMemberToKanbanInput{
-        user: ID!
+        userId: ID!
         permission: Permission!
     }
     input AddCardToBookInput{
         name: String
-    }
-    input AddLabelToCardInput{
-        name: String!
-        color: String!
     }
     input AddTaskToCardInput{
         name: String!
@@ -146,7 +146,7 @@ const typeDefs = gql`
     type Mutation {
         addBookToKanban(id: ID!, input: AddBookToKanbanInput): Kanban!
         addCardToBook(id: ID!, input: AddCardToBookInput): Book!
-        addLabelToCard(id: ID!, input: AddLabelToCardInput): Card!
+        addLabelToCard(id: ID!, labelId: ID!): Card!
         addLabelToKanban(id: ID!, input: AddLabelToKanbanInput): Kanban!
         addMemberToKanban(id: ID!, input: AddMemberToKanbanInput): Kanban!
         addTaskToCard(id: ID!, input: AddTaskToCardInput): Card!

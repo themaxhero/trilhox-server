@@ -1,20 +1,28 @@
-import { IBookChangeset, IBookCreationParams } from "../repo/Book.Repo";
-import { ICardChangeset, ICardCreationParams } from "../repo/Card.Repo";
-import { ICommentChangeset, ICommentCreationParams } from "../repo/Comment.Repo";
-import { IKanbanChangeset } from "../repo/Kanban.Repo";
-import { ILabelChangeset, ILabelCreationParams } from "../repo/Label.Repo";
-import { IMemberChangeset, IMemberCreationParams } from "../repo/Member.Repo";
-import { ITaskChangeset, ITaskCreationParams } from "../repo/Task.Repo";
-import { IUserChangeset } from "../repo/User.Repo";
+import { IAddBookToKanbanInput,
+         IAddCardToBookInput,
+         IAddKanbanToUserInput,
+         IAddLabelToKanbanInput,
+         IAddMemberToKanbanInput,
+         IAddTaskToCardInput,
+         IPostCommentOnCardInput,
+         IUpdateBookInput,
+         IUpdateCardInput,
+         IUpdateCommentInput,
+         IUpdateKanbanInput,
+         IUpdateLabelInput,
+         IUpdateMemberInput,
+         IUpdateTaskInput,
+         IUpdateUserInput,
+} from "../input.types";
 
 export interface IAddBookArgs {
     id: string;
-    input: IBookCreationParams;
+    input: IAddBookToKanbanInput;
 }
 
 export interface IAddCardArgs {
     id: string;
-    input: ICardCreationParams;
+    input: IAddCardToBookInput;
 }
 
 export interface IAddLabelCardArgs{
@@ -24,22 +32,22 @@ export interface IAddLabelCardArgs{
 
 export interface IAddLabelKanbanArgs{
     id: string;
-    input: ILabelCreationParams;
+    input: IAddLabelToKanbanInput;
 }
 
-export interface IAddCardArgs{
+export interface IAddKanbanUserArgs{
     id: string;
-    input: ICardCreationParams;
+    input: IAddKanbanToUserInput;
 }
 
 export interface IAddMemberArgs{
     id: string;
-    input: IMemberCreationParams;
+    input: IAddMemberToKanbanInput;
 }
 
 export interface IAddTaskArgs{
     id: string;
-    input: ITaskCreationParams;
+    input: IAddTaskToCardInput;
 }
 
 export interface IMoveCardArgs{
@@ -49,7 +57,7 @@ export interface IMoveCardArgs{
 
 export interface IPostCommentArgs{
     id: string;
-    input: ICommentCreationParams;
+    input: IPostCommentOnCardInput;
 }
 
 export interface IRemCardBookArgs {
@@ -99,39 +107,39 @@ export interface IRemLabelArgs{
 
 export interface IUpdateBookArgs {
     id: string;
-    input: IBookChangeset;
+    input: IUpdateBookInput;
 }
 
 export interface IUpdateCardArgs {
     id: string;
-    input: ICardChangeset;
+    input: IUpdateCardInput;
 }
 
 export interface IUpdateCommentArgs {
     id: string;
-    input: ICommentChangeset;
+    input: IUpdateCommentInput;
 }
 
 export interface IUpdateKanbanArgs {
     id: string;
-    input: IKanbanChangeset;
+    input: IUpdateKanbanInput;
 }
 
 export interface IUpdateLabelArgs {
     id: string;
-    input: ILabelChangeset;
+    input: IUpdateLabelInput;
 }
 
 export interface IUpdateMemberArgs{
     id: string;
-    input: IMemberChangeset;
+    input: IUpdateMemberInput;
 }
 
 export interface IUpdateTaskArgs{
     id: string;
-    input: ITaskChangeset;
+    input: IUpdateTaskInput;
 }
 
 export interface IUpdateUserArgs{
-    input: IUserChangeset;
+    input: IUpdateUserInput;
 }

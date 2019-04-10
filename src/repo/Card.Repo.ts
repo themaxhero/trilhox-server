@@ -4,14 +4,8 @@ import { Card } from "../entity/Card";
 import { Comment } from "../entity/Comment";
 import { Label } from "../entity/Label";
 import { Task } from "../entity/Task";
+import { IAddCardToBookInput, IUpdateCardInput } from "../input.types";
 import { BaseRepo } from "./Base.Repo";
-
-export interface ICardCreationParams{
-    book: Book;
-    name?: string;
-}
-
-export interface ICardChangeset{}
 
 export class CardRepo extends BaseRepo{
     private repo: Repository<Card>;
@@ -21,8 +15,9 @@ export class CardRepo extends BaseRepo{
         this.repo = dbconn.getRepository(Card);
     }
 
-    public async create(input: ICardCreationParams){
+    public async create(book: Book, input: IAddCardToBookInput){
         const card = new Card(
+            book,
             input.name,
         );
         return await card.save();
@@ -133,7 +128,7 @@ export class CardRepo extends BaseRepo{
         }
     }
 
-    public update(id: string, changeset: ICardChangeset){
+    public update(id: string, changeset: IUpdateCardInput){
         this.dbconn
             .createQueryBuilder()
             .update(Card)

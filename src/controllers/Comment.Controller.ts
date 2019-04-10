@@ -2,9 +2,9 @@ import { PubSub, withFilter} from "apollo-server";
 import { IContext, IRepos } from "../context";
 import { Permission } from "../entity/Member";
 import { User } from "../entity/User";
-import { ICommentChangeset } from "../repo/Comment.Repo";
+import { IUpdateCommentInput } from "../input.types";
 import { xor } from "../utils";
-import { uuidValidator } from "../validator";
+import { UpdateCommentInputValidator, uuidValidator } from "../validator";
 
 export class CommentController{
     public static async remove(id: string,
@@ -32,13 +32,14 @@ export class CommentController{
     }
 
     public static async update(id: string,
-                               input: ICommentChangeset,
+                               input: IUpdateCommentInput,
                                user: User,
                                repos: IRepos,
                                pubsub: PubSub){
         if (!uuidValidator(id)){
             throw new Error("Invalid Comment ID");
         }
+        UpdateCommentInputValidator(input);
         const kanban = await repos.comment.fetch(id)
             .then((c) => { if (c !== undefined) { return c.getKanban(); }});
         if (kanban === undefined){

@@ -2,17 +2,8 @@ import { Connection, Repository } from "typeorm";
 import { Kanban } from "../entity/Kanban";
 import { Member, Permission } from "../entity/Member";
 import { User } from "../entity/User";
+import { IAddMemberToKanbanInput, IUpdateMemberInput } from "../input.types";
 import { BaseRepo } from "./Base.Repo";
-
-export interface IMemberCreationParams {
-    user: User;
-    kanban: Kanban;
-    permission: Permission;
-}
-
-export interface IMemberChangeset{
-    permission?: Permission;
-}
 
 export class MemberRepo extends BaseRepo{
     private repo: Repository<Member>;
@@ -22,10 +13,12 @@ export class MemberRepo extends BaseRepo{
         this.repo = dbconn.getRepository(Member);
     }
 
-    public async create(input: IMemberCreationParams){
+    public async create(user: User,
+                        kanban: Kanban,
+                        input: IAddMemberToKanbanInput){
         const member = new Member(
-            input.user,
-            input.kanban,
+            user,
+            kanban,
             input.permission,
         );
         return await member.save();
@@ -44,7 +37,7 @@ export class MemberRepo extends BaseRepo{
                 .getMany();
     }
 
-    public update(id: string, changeset: IMemberChangeset){
+    public update(id: string, changeset: IUpdateMemberInput){
         this.dbconn
             .createQueryBuilder()
             .update(Member)

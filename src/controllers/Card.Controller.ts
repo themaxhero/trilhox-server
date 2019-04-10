@@ -2,11 +2,16 @@ import { PubSub, withFilter } from "apollo-server";
 import { IContext, IRepos } from "../context";
 import { Permission } from "../entity/Member";
 import { User } from "../entity/User";
-import { ICardChangeset } from "../repo/Card.Repo";
-import { ICommentCreationParams } from "../repo/Comment.Repo";
-import { ITaskCreationParams } from "../repo/Task.Repo";
+import { IAddTaskToCardInput,
+         IPostCommentOnCardInput,
+         IUpdateCardInput,
+} from "../input.types";
 import { xor } from "../utils";
-import { uuidValidator } from "../validator";
+import { AddTaskToCardInputValidator,
+         PostCommentOnCardInputValidator,
+         UpdateCardInputValidator,
+         uuidValidator,
+} from "../validator";
 
 export class CardController{
     public static async addLabel(id: string,
@@ -42,13 +47,14 @@ export class CardController{
     }
 
     public static async addTask(id: string,
-                                input: ITaskCreationParams,
+                                input: IAddTaskToCardInput,
                                 user: User,
                                 repos: IRepos,
                                 pubsub: PubSub){
         if (!uuidValidator(id)){
             throw new Error("Invalid Card ID");
         }
+        AddTaskToCardInputValidator(input);
         const kanban = await repos.card.fetch(id)
             .then((c) => { if (c !== undefined ) { return c.getKanban(); } });
         if (kanban === undefined){
@@ -71,13 +77,14 @@ export class CardController{
     }
 
     public static async postComment(id: string,
-                                    input: ICommentCreationParams,
+                                    input: IPostCommentOnCardInput,
                                     user: User,
                                     repos: IRepos,
                                     pubsub: PubSub){
         if (!uuidValidator(id)){
             throw new Error("Invalid Card ID");
         }
+        PostCommentOnCardInputValidator(input);
         const kanban = await repos.card.fetch(id)
             .then((c) => { if (c !== undefined ) { return c.getKanban(); } });
         if (kanban === undefined){
@@ -190,13 +197,14 @@ export class CardController{
     }
 
     public static async update(id: string,
-                               input: ICardChangeset,
+                               input: IUpdateCardInput,
                                user: User,
                                repos: IRepos,
                                pubsub: PubSub){
         if (!uuidValidator(id)){
             throw new Error("Invalid Card ID");
         }
+        UpdateCardInputValidator(input);
         const kanban = await repos.card.fetch(id)
             .then((c) => { if (c !== undefined ) { return c.getKanban(); } });
         if (kanban === undefined){

@@ -2,9 +2,9 @@ import { PubSub, withFilter} from "apollo-server";
 import { IContext, IRepos } from "../context";
 import { Permission } from "../entity/Member";
 import { User } from "../entity/User";
-import { ILabelChangeset } from "../repo/Label.Repo";
+import { IUpdateLabelInput } from "../input.types";
 import { xor } from "../utils";
-import { uuidValidator } from "../validator";
+import { UpdateLabelInputValidator, uuidValidator } from "../validator";
 
 export class LabelController{
     public static async remove(id: string,
@@ -30,13 +30,14 @@ export class LabelController{
     }
 
     public static async update(id: string,
-                               input: ILabelChangeset,
+                               input: IUpdateLabelInput,
                                user: User,
                                repos: IRepos,
                                pubsub: PubSub ){
         if (!uuidValidator(id)){
             throw new Error("Invalid Label ID");
         }
+        UpdateLabelInputValidator(input);
         const kanban = await repos.label.fetch(id)
             .then((l) => { if (l !== undefined) { return l.getKanban(); }});
         if (kanban === undefined){

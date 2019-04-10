@@ -1,16 +1,7 @@
 import { Connection, Repository } from "typeorm";
 import { Label } from "../entity/Label";
+import { IAddLabelToKanbanInput, IUpdateLabelInput  } from "../input.types";
 import { BaseRepo } from "./Base.Repo";
-
-export interface ILabelCreationParams{
-    name: string;
-    color: string;
-}
-
-export interface ILabelChangeset{
-    name?: string;
-    color?: string;
-}
 
 export class LabelRepo extends BaseRepo{
     private repo: Repository<Label>;
@@ -20,7 +11,7 @@ export class LabelRepo extends BaseRepo{
         this.repo = dbconn.getRepository(Label);
     }
 
-    public async create(input: ILabelCreationParams){
+    public async create(input: IAddLabelToKanbanInput){
         const label = new Label(input.name, input.color);
         return await label.save();
     }
@@ -38,7 +29,7 @@ export class LabelRepo extends BaseRepo{
                 .getMany();
     }
 
-    public update(id: string, changeset: ILabelChangeset){
+    public update(id: string, changeset: IUpdateLabelInput){
         this.dbconn
             .createQueryBuilder()
             .update(Label)
