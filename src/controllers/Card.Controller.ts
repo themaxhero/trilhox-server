@@ -14,6 +14,27 @@ import { AddTaskToCardInputValidator,
 } from "../validator";
 
 export class CardController{
+    public static fetch(id: string, repos: IRepos){
+        if (!uuidValidator(id)){
+            throw new Error("Invalid Card ID");
+        }
+        repos.card.fetch(id);
+    }
+
+    public static allComments(id: string, repos: IRepos){
+        if (!uuidValidator(id)){
+            throw new Error("Invalid Card ID");
+        }
+        repos.card.getComments(id);
+    }
+
+    public static allTasks(id: string, repos: IRepos){
+        if (!uuidValidator(id)){
+            throw new Error("Invalid Card ID");
+        }
+        repos.card.getTasks(id);
+    }
+
     public static async addLabel(id: string,
                                  labelId: string,
                                  user: User,

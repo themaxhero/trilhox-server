@@ -16,6 +16,34 @@ import { AddBookToKanbanInputValidator,
 } from "../validator";
 
 export class KanbanController{
+    public static fetch(id: string, repos: IRepos){
+        if (!uuidValidator(id)){
+            throw new Error("Invalid Kanban ID");
+        }
+        repos.kanban.fetch(id);
+    }
+
+    public static allBooks(id: string, repos: IRepos){
+        if (!uuidValidator(id)){
+            throw new Error("Invalid Kanban ID");
+        }
+        repos.kanban.getBooks(id);
+    }
+
+    public static allLabels(id: string, repos: IRepos){
+        if (!uuidValidator(id)){
+            throw new Error("Invalid Kanban ID");
+        }
+        repos.kanban.getLabels(id);
+    }
+
+    public static allMembers(id: string, repos: IRepos){
+        if (!uuidValidator(id)){
+            throw new Error("Invalid Kanban ID");
+        }
+        repos.kanban.getMembers(id);
+    }
+
     public static async addBook(id: string,
                                 input: IAddBookToKanbanInput,
                                 user: User,

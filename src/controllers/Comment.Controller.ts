@@ -7,6 +7,12 @@ import { xor } from "../utils";
 import { UpdateCommentInputValidator, uuidValidator } from "../validator";
 
 export class CommentController{
+    public static fetch(id: string, repos: IRepos){
+        if (!uuidValidator(id)){
+            throw new Error("Invalid Comment ID");
+        }
+        repos.comment.fetch(id);
+    }
     public static async remove(id: string,
                                user: User,
                                repos: IRepos,

@@ -7,6 +7,13 @@ import { xor } from "../utils";
 import { UpdateLabelInputValidator, uuidValidator } from "../validator";
 
 export class LabelController{
+    public static fetch(id: string, repos: IRepos){
+        if (!uuidValidator(id)){
+            throw new Error("Invalid Label ID");
+        }
+        repos.label.fetch(id);
+    }
+
     public static async remove(id: string,
                                user: User,
                                repos: IRepos,

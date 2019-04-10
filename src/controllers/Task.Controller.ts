@@ -13,6 +13,13 @@ interface ISubRemoved {
 }
 
 export class TaskController{
+    public static fetch(id: string, repos: IRepos){
+        if (!uuidValidator(id)){
+            throw new Error("Invalid Task ID");
+        }
+        repos.task.fetch(id);
+    }
+
     public static async update(id: string,
                                input: IUpdateTaskInput,
                                user: User,
@@ -38,6 +45,7 @@ export class TaskController{
         pubsub.publish("TASK_UPDATED", { task });
         return task;
     }
+
     public static subscribeRemoved(pubsub: PubSub){
         return {
             subscribe: () =>

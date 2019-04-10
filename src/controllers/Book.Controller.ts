@@ -10,6 +10,20 @@ import { AddCardToBookInputValidator,
 } from "../validator";
 
 export class BookController{
+    public static fetch(id: string, repos: IRepos){
+        if (!uuidValidator(id)){
+            throw new Error("Invalid Book ID");
+        }
+        return repos.book.fetch(id);
+    }
+
+    public static allCards(id: string, repos: IRepos){
+        if (!uuidValidator(id)){
+            throw new Error("Invalid Book ID");
+        }
+        return repos.book.getCards(id);
+    }
+
     public static async addCard(id: string,
                                 input: IAddCardToBookInput,
                                 user: User,
