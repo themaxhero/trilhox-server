@@ -1,6 +1,7 @@
 import { ApolloServer, PubSub } from "apollo-server-express";
 import { compare, hash } from "bcrypt";
 import bodyParser from "body-parser";
+import cors from "cors";
 import express, { Request, Response } from "express";
 import * as expressValidator from "express-validator/check";
 import { createServer } from "http";
@@ -27,6 +28,8 @@ createConnection().then(async (dbconn: Connection) => {
     const app = express();
 
     app.use(bodyParser.json());
+
+    app.use(cors());
 
     const PORT = 4600;
 
@@ -118,26 +121,25 @@ createConnection().then(async (dbconn: Connection) => {
         typeDefs,
     });
 
-    const sendCookies = (res: Response,
-                         username: string,
-                         token: string,
-                         expires: Date) => {
+    const setCookies = (res: Response,
+                        username: string,
+                        token: string,
+                        expires: Date) => {
         res.cookie("username", username, { expires });
         res.cookie("token", token, { expires });
     };
 
     app.post("/register",
-        async (req: Request, res: Response) => {
+      async (req: Request, res: Response) => {
         if (!req.body.username || !req.body.email || !req.body.password){
             return res.status(400).json(["bad_request"]);
         } else {
-            expressValidator.body("username")
-              .custom(validator.usernameValidator);
-            expressValidator.body("email").isEmail();
-            expressValidator.body("password").isLength({min: 8, max: 64});
-            const errors = expressValidator.validationResult(req);
+          expressValidator.body("username").custom(validator.usernameValidator);
+          expressValidator.body("email").isEmail();
+          expressValidator.body("password").isLength({min: 8, max: 64});
+          const errors = expressValidator.validationResult(req);
 
-            if (errors.isEmpty()){
+          if (errors.isEmpty()){
             hash(req.body.password, 10, async (err, hashedPassword) => {
                 const { username, email } = req.body;
                 const password = hashedPassword;
@@ -148,53 +150,54 @@ createConnection().then(async (dbconn: Connection) => {
                 const payload  = { id, email };
                 const token    = sign(payload, JWT_SECRET, { expiresIn: "7d" });
                 date.setTime(date.getTime() + (7 * 24 * 60 * 60 * 1000));
-                sendCookies(res, username, token, date);
+                setCookies(res, username, token, date);
             });
-            } else{
+          } else {
             console.log(`Error at: ${new Date().toUTCString}`);
             return res.status(400).json({errors: errors.array()});
-            }
+          }
         }
-        },
+      },
     );
 
     app.post("/login",
-        async (req: Request, res: Response) => {
+      async (req: Request, res: Response) => {
+        console.log("Attempt to login done.");
         expressValidator.check("email").isEmail();
         expressValidator.check("password").isLength({min: 8, max: 64});
-
         const errors = expressValidator.validationResult(req);
         if (errors.isEmpty()){
-            const user = await repos.user.fetchByEmail(req.body.email);
-            const password = req.body.password;
+          const user = await repos.user.fetchByEmail(req.body.email);
+          const password = req.body.password;
 
-            if (!user){
+          if (!user){
             return res.status(400).json({ error: "invalid_user_or_password" });
-            }
+          }
 
-            const valid = await compare(password, user.password);
+          const valid = await compare(password, user.password);
 
-            if (!valid){
+          if (!valid){
             return res.status(400).json({ error: "invalid_user_or_password" });
-            }
+          }
 
-            const id = user.id;
-            const email = user.email;
+          const id = user.id;
+          const email = user.email;
 
-            const token = sign({ id, email }, JWT_SECRET, {expiresIn: "7d"});
-            user.token = token;
-            user.save();
+          const token = sign({ id, email }, JWT_SECRET, { expiresIn: "7d" });
+          user.token = token;
+          user.save();
 
-            const date = new Date();
-            date.setTime(date.getDate() + (7 * 24 * 60 * 60 * 1000));
+          const date = new Date();
+          date.setTime(date.getDate() + (7 * 24 * 60 * 60 * 1000));
 
-            sendCookies(res, user.username, token, date);
-            res.send();
-        } else{
-            console.log(`Error at: ${new Date().toUTCString}`);
-            return res.status(400).json({errors: errors.array()});
+          setCookies(res, user.username, token, date);
+          console.log(`${user.username} logged successfuly.`);
+          res.status(200).json({ token });
+        } else {
+          console.log(`Error at: ${new Date().toUTCString}`);
+          return res.status(400).json({errors: errors.array()});
         }
-        },
+      },
     );
 
     server.applyMiddleware({app, path: "/api"});
@@ -204,12 +207,12 @@ createConnection().then(async (dbconn: Connection) => {
     server.installSubscriptionHandlers(ws);
 
     ws.listen({ port: PORT}, () => {
-        console.log(
-          `🚀 Server ready at http://localhost:${PORT}${server.graphqlPath}`,
-        );
-        console.log(
-          `🚀 Subscriptions ready at
-           ws://localhost:${PORT}${server.subscriptionsPath}`,
-        );
+        const link = `http://localhost:${PORT}${server.graphqlPath}`;
+        const sublink = `ws://localhost:${PORT}${server.subscriptionsPath}`;
+        const printLink =
+          (type: string, value: string) =>
+            `🚀  ${type} ready at ${value}`;
+        console.log(printLink("Server", link));
+        console.log(printLink("Subscriptions", sublink));
     });
 });

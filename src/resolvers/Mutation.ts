@@ -46,6 +46,12 @@ export default{
                { user, repos, pubsub }: IContext) =>
             CardController.addTask(id, input, user, repos, pubsub),
 
+    createKanban:
+        async (_: {},
+               { input }: types.ICreateKanbanArgs,
+               { user, repos, pubsub}: IContext ) =>
+            KanbanController.create(input, user, repos, pubsub),
+
     moveCard:
         async (_: {},
                { id, bookId }: types.IMoveCardArgs,

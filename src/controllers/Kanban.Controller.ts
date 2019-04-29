@@ -5,17 +5,32 @@ import { User } from "../entity/User";
 import { IAddBookToKanbanInput,
          IAddLabelToKanbanInput,
          IAddMemberToKanbanInput,
+         ICreateKanbanInput,
          IUpdateKanbanInput,
 } from "../input.types";
 import { xor } from "../utils";
-import { AddBookToKanbanInputValidator,
-         AddLabelToKanbanInputValidator,
-         AddMemberToKanbanInputValidator,
-         UpdateKanbanInputValidator,
-         uuidValidator,
+import {
+    AddBookToKanbanInputValidator,
+    AddLabelToKanbanInputValidator,
+    AddMemberToKanbanInputValidator,
+    CreateKanbanArgsInputValidator,
+    UpdateKanbanInputValidator,
+    uuidValidator,
 } from "../validator";
 
 export class KanbanController{
+    public static async create(input: ICreateKanbanInput,
+                               user: User,
+                               repos: IRepos,
+                               pubsub: PubSub) {
+        CreateKanbanArgsInputValidator(input);
+        const kanban = await repos.kanban.create(user, input);
+        if (kanban === undefined){
+            throw new Error("Kanban not found");
+        }
+        pubsub.publish("KANBAN_CREATED", { kanban });
+        return kanban;
+    }
     public static fetch(id: string, repos: IRepos){
         if (!uuidValidator(id)){
             throw new Error("Invalid Kanban ID");

@@ -27,6 +27,11 @@ export interface IAddTaskToCardInput{
     active?: boolean;
 }
 
+export interface ICreateKanbanInput{
+    name: string;
+    background: string;
+}
+
 export interface IPostCommentOnCardInput{
     author: string;
     content: string;

@@ -4,6 +4,7 @@ import { IAddBookToKanbanInput,
          IAddLabelToKanbanInput,
          IAddMemberToKanbanInput,
          IAddTaskToCardInput,
+         ICreateKanbanInput,
          IPostCommentOnCardInput,
          IUpdateBookInput,
          IUpdateCardInput,
@@ -48,6 +49,10 @@ export interface IAddMemberArgs{
 export interface IAddTaskArgs{
     id: string;
     input: IAddTaskToCardInput;
+}
+
+export interface ICreateKanbanArgs{
+    input: ICreateKanbanInput;
 }
 
 export interface IMoveCardArgs{

@@ -23,6 +23,10 @@ const typeDefs = gql`
         name: String!
         active: Boolean
     }
+    input CreateKanbanInput{
+        name: String!
+        backgroud: String!
+    }
     input PostCommentOnCardInput{
         author: ID!
         content: String!
@@ -150,6 +154,7 @@ const typeDefs = gql`
         addLabelToKanban(id: ID!, input: AddLabelToKanbanInput): Kanban!
         addMemberToKanban(id: ID!, input: AddMemberToKanbanInput): Kanban!
         addTaskToCard(id: ID!, input: AddTaskToCardInput): Card!
+        createKanban(input: CreateKanbanInput): Kanban!
         moveCard(id: ID!, bookId: ID!): Card!
         postCommentOnCard(id: ID!, input: PostCommentOnCardInput): Card!
         remCardFromBook(id: ID!, bookId: ID!): Book!

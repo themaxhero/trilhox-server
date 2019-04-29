@@ -6,6 +6,7 @@ import { IAddBookToKanbanInput,
          IAddLabelToKanbanInput,
          IAddMemberToKanbanInput,
          IAddTaskToCardInput,
+         ICreateKanbanInput,
          IPostCommentOnCardInput,
          IUpdateBookInput,
          IUpdateCardInput,
@@ -31,6 +32,14 @@ function validateUsername(value: any){
 function validatePermission(value: any){
     if (typeof(value) === "string"){
         const p = /^(COMMENTER | EDITOR | READER)$/;
+        return p.test(value);
+    }
+    return false;
+}
+
+function validateUrl(value: any){
+    if (typeof(value) === "string"){
+        const p = /@^(https?|http):\/\/[^\s/$.?#].[^\s]*$@iS/;
         return p.test(value);
     }
     return false;
@@ -114,6 +123,16 @@ export function AddTaskToCardInputValidator(input: IAddTaskToCardInput){
     }
     return true;
 }
+
+export function CreateKanbanArgsInputValidator(input: ICreateKanbanInput){
+    if (!validateUsername(input.name)){
+        throw new Error("Invalid Kanban name");
+    }
+    if (!validateUrl(input.background)){
+        throw new Error("Invalid background url");
+    }
+}
+
 export function PostCommentOnCardInputValidator(input: IPostCommentOnCardInput){
     if (uuidValidator(input.author)){
         throw new Error("Invalid Card ID");
