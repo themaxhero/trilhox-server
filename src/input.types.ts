@@ -20,6 +20,7 @@ export interface IAddCardToBookInput{
 
 export interface IAddKanbanToUserInput{
     name?: string;
+    background: string;
 }
 
 export interface IAddTaskToCardInput{

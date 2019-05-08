@@ -39,7 +39,7 @@ function validatePermission(value: any){
 
 function validateUrl(value: any){
     if (typeof(value) === "string"){
-        const p = /@^(https?|http):\/\/[^\s/$.?#].[^\s]*$@iS/;
+        const p = /(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png)/;
         return p.test(value);
     }
     return false;
@@ -73,7 +73,8 @@ export const usernameValidator =
     };
 
 export function uuidValidator(idCandidate: string){
-    const p = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/ig;
+    // tslint:disable-next-line
+    const p = /^[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}$/;
     return p.test(idCandidate);
 }
 

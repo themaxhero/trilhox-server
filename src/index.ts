@@ -127,10 +127,12 @@ createConnection().then(async (dbconn: Connection) => {
                         expires: Date) => {
         res.cookie("username", username, { expires });
         res.cookie("token", token, { expires });
+        res.status(200).json({ token });
     };
 
     app.post("/register",
       async (req: Request, res: Response) => {
+        console.log("Register attempt made.");
         if (!req.body.username || !req.body.email || !req.body.password){
             return res.status(400).json(["bad_request"]);
         } else {
@@ -167,21 +169,22 @@ createConnection().then(async (dbconn: Connection) => {
         expressValidator.check("password").isLength({min: 8, max: 64});
         const errors = expressValidator.validationResult(req);
         if (errors.isEmpty()){
-          const user = await repos.user.fetchByEmail(req.body.email);
+          const user = await repos.user.fetchByEmail(req.body.email)
+            .catch( (reason: any) => console.log(reason) );
           const password = req.body.password;
 
           if (!user){
             return res.status(400).json({ error: "invalid_user_or_password" });
           }
 
-          const valid = await compare(password, user.password);
+          const valid = await compare(password, user.password)
+            .catch( (reason: any) => console.log(reason) );
 
           if (!valid){
             return res.status(400).json({ error: "invalid_user_or_password" });
           }
 
-          const id = user.id;
-          const email = user.email;
+          const { id, email, username } = user;
 
           const token = sign({ id, email }, JWT_SECRET, { expiresIn: "7d" });
           user.token = token;
@@ -190,9 +193,8 @@ createConnection().then(async (dbconn: Connection) => {
           const date = new Date();
           date.setTime(date.getDate() + (7 * 24 * 60 * 60 * 1000));
 
-          setCookies(res, user.username, token, date);
+          setCookies(res, username, token, date);
           console.log(`${user.username} logged successfuly.`);
-          res.status(200).json({ token });
         } else {
           console.log(`Error at: ${new Date().toUTCString}`);
           return res.status(400).json({errors: errors.array()});

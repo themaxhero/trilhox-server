@@ -5,6 +5,7 @@ import { CommentController } from "../controllers/Comment.Controller";
 import { KanbanController } from "../controllers/Kanban.Controller";
 import { LabelController } from "../controllers/Label.Controller";
 import { TaskController } from "../controllers/Task.Controller";
+import { UserController } from "../controllers/User.Controller";
 
 export default{
     allBooksFromKanban: async (_: {}, { id }: any, { repos }: IContext) => {
@@ -22,8 +23,8 @@ export default{
     allMembersFromKanban: async (_: {}, { id }: any, { repos }: IContext) => {
         return KanbanController.allMembers(id, repos);
     },
-    allMyKanbans: async (_: {}, __: any, { user }: IContext) => {
-        return user.kanbans;
+    allMyKanbans: async (_: {}, __: any, { user, repos }: IContext) => {
+        return UserController.allKanbans(user, repos);
     },
     allTasksFromCard: async (_: {}, { id }: any, { repos }: IContext) => {
         return CardController.allTasks(id, repos);

@@ -25,7 +25,7 @@ const typeDefs = gql`
     }
     input CreateKanbanInput{
         name: String!
-        backgroud: String!
+        background: String!
     }
     input PostCommentOnCardInput{
         author: ID!
@@ -132,13 +132,13 @@ const typeDefs = gql`
 
     type Query {
         me: User!
-        allMyKanbans: [Kanban!]!
-        allMembersFromKanban(id: ID!): [Member!]!
-        allBooksFromKanban(id: ID!): [Book!]!
-        allCardsFromBook(id: ID!): [Card!]!
-        allCommentsFromCard(id: ID!): [Comment!]!
-        allTasksFromCard(id: ID!): [Task!]!
-        allLabelsFromKanban: [Label!]!
+        allMyKanbans: [Kanban]!
+        allMembersFromKanban(id: ID!): [Member]!
+        allBooksFromKanban(id: ID!): [Book]!
+        allCardsFromBook(id: ID!): [Card]!
+        allCommentsFromCard(id: ID!): [Comment]!
+        allTasksFromCard(id: ID!): [Task]!
+        allLabelsFromKanban: [Label]!
         kanban(id: ID!): Kanban!
         book(id: ID!): Book!
         card(id: ID!): Card!
