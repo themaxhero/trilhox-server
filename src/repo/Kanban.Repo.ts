@@ -18,6 +18,7 @@ export class KanbanRepo extends BaseRepo{
     public async create(author: User, input: IAddKanbanToUserInput){
         const kanban = new Kanban(
             author,
+            input.background,
             input.name,
         );
         return await kanban.save();

@@ -34,6 +34,7 @@ export class UserRepo extends BaseRepo{
             input.avatar,
             input.token,
         );
+        user.kanbans = [];
         return await user.save();
     }
 
@@ -87,6 +88,18 @@ export class UserRepo extends BaseRepo{
             user.kanbans.push(kanban);
             return await user.save();
         }
+    }
+
+    public async allKanbans(user: User){
+        const { id } = user;
+        const actualUser = await this.repo.find(
+            {
+                relations: ["kanbans"],
+                take: 1,
+                where: { id },
+            },
+        ).then((users: User[]) => users[0]);
+        return actualUser;
     }
 
     public ownsBook(user: User, book: Book){
