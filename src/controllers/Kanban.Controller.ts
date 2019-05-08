@@ -23,11 +23,13 @@ export class KanbanController{
                                user: User,
                                repos: IRepos,
                                pubsub: PubSub) {
+        console.log("Oi, eu sou um print");
         CreateKanbanArgsInputValidator(input);
         const kanban = await repos.kanban.create(user, input);
         if (kanban === undefined){
             throw new Error("Kanban not found");
         }
+        console.log(`${JSON.stringify(kanban)}`);
         pubsub.publish("KANBAN_CREATED", { kanban });
         return kanban;
     }

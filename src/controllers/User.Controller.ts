@@ -5,6 +5,10 @@ import { IAddKanbanToUserInput, IUpdateUserInput } from "../input.types";
 import { UpdateUserInputValidator } from "../validator";
 
 export class UserController{
+    public static async allKanbans(user: User, repos: IRepos){
+        const actualUser = await repos.user.allKanbans(user);
+        return actualUser.kanbans ? actualUser.kanbans : [];
+    }
     public static async update(user: User,
                                input: IUpdateUserInput,
                                repos: IRepos,
