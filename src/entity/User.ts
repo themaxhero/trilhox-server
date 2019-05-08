@@ -38,7 +38,7 @@ export class User extends BaseEntity {
     @Column("varchar", { length: 255, nullable: true })
     public token: string;
 
-    @OneToMany((type) => Kanban, (kanban) => kanban.id)
+    @OneToMany((type) => Kanban, (kanban) => kanban.author)
     public kanbans!: Kanban[];
 
     constructor(

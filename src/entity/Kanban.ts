@@ -2,6 +2,7 @@ import {
     BaseEntity,
     Column,
     Entity,
+    JoinColumn,
     ManyToOne,
     OneToMany,
     PrimaryGeneratedColumn,
@@ -27,6 +28,7 @@ export class Kanban extends BaseEntity{
     public books!: Book[];
 
     @ManyToOne((type) => User, (user) => user.kanbans)
+    @JoinColumn()
     public author: User;
 
     @OneToMany((type) => Member, (member) => member.kanban)
@@ -35,9 +37,10 @@ export class Kanban extends BaseEntity{
     @OneToMany((type) => Label, (label) => label.kanban)
     public labels!: Label[];
 
-    constructor(author: User, name?: string){
+    constructor(author: User, background: string, name?: string){
         super();
         this.name = name || "New Kanban";
         this.author = author;
+        this.background = background;
     }
 }
